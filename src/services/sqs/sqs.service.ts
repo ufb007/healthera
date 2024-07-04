@@ -7,6 +7,7 @@ import {
     CreateQueueCommand, 
     DeleteMessageCommand 
 } from '@aws-sdk/client-sqs';
+import { TasksService } from 'src/tasks/tasks.service';
 
 @Injectable()
 export class SqsService implements QueueService {
@@ -20,6 +21,8 @@ export class SqsService implements QueueService {
     });
     public queueName: string = 'taskQueue';
     private queueUrl: string;
+
+    constructor(private readonly tasksService: TasksService) {}
 
     /**
      * Creates an SQS queue with the specified name and assigns the resulting queue URL to the `queueUrl` property.
@@ -109,6 +112,8 @@ export class SqsService implements QueueService {
         // Start consuming messages
         this.consumeMessages(async (message) => {
             console.log('Received message:', message);
+
+            this.tasksService.create(JSON.parse(message));
             // Process the message here
         });
     }

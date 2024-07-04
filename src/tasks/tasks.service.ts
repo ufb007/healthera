@@ -12,12 +12,12 @@ type TasksType = {
 export class TasksService {
     constructor(
         @Inject('QUEUE_SERVICE') private queueService: QueueService,
-        // @Inject(TaskRepository) private taskRepository: TaskRepository
+        private taskRepository: TaskRepository
     ) {}
 
     public async create({ title, description }: TasksType) {
         console.log('THIS IS FROM TASKS SERVICE - ', title);
         //await this.queueService.publishMessage(JSON.stringify({ title, description }));
-        //return this.taskRepository.create({ title, description });
+        return this.taskRepository.create({ title, description });
     }
 }

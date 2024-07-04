@@ -1,9 +1,8 @@
-import { Module, DynamicModule } from '@nestjs/common';
+import { Module, DynamicModule, forwardRef } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { RabbitMqService } from '../services/rabbit-mq/rabbit-mq.service';
 import { SqsService } from '../services/sqs/sqs.service';
 import { TasksService } from 'src/tasks/tasks.service';
-import { TaskRepository } from 'src/repositories/task.repository';
 
 @Module({
     imports: [ConfigModule]
@@ -13,13 +12,15 @@ export class QueueModule {
         return {
             module: QueueModule,
             providers: [
+                SqsService,
+                RabbitMqService,
                 {
                     provide: 'QUEUE_SERVICE',
-                    useFactory: (configService: ConfigService) => {
+                    useFactory: (configService: ConfigService, tasksService: TasksService) => {
                         if (configService.get('QUEUE_PROVIDER') === 'sqs') {
-                            return new SqsService();
+                            return new SqsService(tasksService);
                         } else {
-                            return new RabbitMqService();
+                            return new RabbitMqService(tasksService)
                         }
                     },
                     inject: [ConfigService]

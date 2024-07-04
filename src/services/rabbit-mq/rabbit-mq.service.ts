@@ -10,22 +10,16 @@ export class RabbitMqService implements QueueService {
     private channelWrapper: ChannelWrapper;
     public queueName: string = 'taskQueue';
 
-    private tasksService: TasksService;
-
     /**
      * Initializes the RabbitMQ connection and creates a channel.
      *
      * @return {void} No return value.
      */
-    constructor() {
+    constructor(private readonly tasksService: TasksService) {
         const connection = amqp.connect(process.env.RABBITMQ_ENDPOINT);
         this.channelWrapper = connection.createChannel({
             setup: (channel: Channel) => channel.assertQueue(this.queueName, { durable: true })
         });
-
-        //const taskRepository: TaskRepository = new TaskRepository();
-
-        this.tasksService = new TasksService(this);
     }
 
     /**
