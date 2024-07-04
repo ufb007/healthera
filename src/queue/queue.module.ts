@@ -1,8 +1,9 @@
 import { Module, DynamicModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config'
-import { QueueService } from '../services/queue.service.interface';
 import { RabbitMqService } from '../services/rabbit-mq/rabbit-mq.service';
 import { SqsService } from '../services/sqs/sqs.service';
+import { TasksService } from 'src/tasks/tasks.service';
+import { TaskRepository } from 'src/repositories/task.repository';
 
 @Module({
     imports: [ConfigModule]

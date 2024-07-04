@@ -12,6 +12,7 @@ yarn-error.log*
 lerna-debug.log*
 
 .env
+/mongodb
 
 # OS
 .DS_Store

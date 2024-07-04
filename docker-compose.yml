@@ -27,6 +27,7 @@ services:
     depends_on:
       - rabbitmq
       - sqsqueue
+      - mongodb
     environment:
       - RABBITMQ_URL=${RABBITMQ_ENDPOINT}
     networks:
@@ -55,6 +56,18 @@ services:
       - "4566:4566"
     environment:
       - SERVICES=sqs
+    networks:
+      - app-network
+
+  mongodb:
+    container_name: mongodb
+    build:
+      context: ./mongo
+      dockerfile: Dockerfile
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./mongodb/mongo_data:/data/db
     networks:
       - app-network
 

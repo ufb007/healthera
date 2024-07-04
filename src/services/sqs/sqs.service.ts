@@ -10,7 +10,7 @@ import {
 
 @Injectable()
 export class SqsService implements QueueService {
-    private sqsClient = new SQSClient({ 
+    private sqsClient = new SQSClient({
         region: process.env.AWS_REGION,
         endpoint: process.env.SQS_LOCALSTACK_ENDPOINT,
         credentials: {

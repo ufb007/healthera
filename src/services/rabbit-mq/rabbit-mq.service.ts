@@ -1,23 +1,31 @@
-import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { QueueService } from '../queue.service.interface';
 import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 import { Channel, ConfirmChannel } from 'amqplib';
+import { TasksService } from 'src/tasks/tasks.service';
+import { TaskRepository } from 'src/repositories/task.repository';
 
 @Injectable()
 export class RabbitMqService implements QueueService {
     private channelWrapper: ChannelWrapper;
     public queueName: string = 'taskQueue';
 
+    private tasksService: TasksService;
+
     /**
      * Initializes the RabbitMQ connection and creates a channel.
      *
-     * @return {void}
+     * @return {void} No return value.
      */
     constructor() {
         const connection = amqp.connect(process.env.RABBITMQ_ENDPOINT);
         this.channelWrapper = connection.createChannel({
             setup: (channel: Channel) => channel.assertQueue(this.queueName, { durable: true })
         });
+
+        //const taskRepository: TaskRepository = new TaskRepository();
+
+        this.tasksService = new TasksService(this);
     }
 
     /**
@@ -50,10 +58,12 @@ export class RabbitMqService implements QueueService {
                 await channel.consume(this.queueName, (message) => {
                     if (message) {
                         const content = message.content.toString();
+
+                        // Send data to task service to process
+                        this.tasksService.create(JSON.parse(content));
                         
                         Logger.log('Received message:', content);
                         channel.ack(message);
-                        console.log('CONSUMING MESSAGE - ', content);
                     }
                 });
             });
