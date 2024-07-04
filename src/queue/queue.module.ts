@@ -15,10 +15,10 @@ export class QueueModule {
                 {
                     provide: 'QUEUE_SERVICE',
                     useFactory: (configService: ConfigService) => {
-                        if (configService.get('QUEUE_PRIVDER')) {
-                            return new RabbitMqService();
-                        } else {
+                        if (configService.get('QUEUE_PROVIDER') === 'sqs') {
                             return new SqsService();
+                        } else {
+                            return new RabbitMqService();
                         }
                     },
                     inject: [ConfigService]

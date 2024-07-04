@@ -8,6 +8,11 @@ export class RabbitMqService implements QueueService {
     private channelWrapper: ChannelWrapper;
     public queueName: string = 'taskQueue';
 
+    /**
+     * Initializes the RabbitMQ connection and creates a channel.
+     *
+     * @return {void}
+     */
     constructor() {
         const connection = amqp.connect(process.env.RABBITMQ_ENDPOINT);
         this.channelWrapper = connection.createChannel({
@@ -15,6 +20,12 @@ export class RabbitMqService implements QueueService {
         });
     }
 
+    /**
+     * Publishes a message to the queue.
+     *
+     * @param {string} message - The message to be published.
+     * @return {Promise<void>} A promise that resolves when the message is successfully published or an error occurs.
+     */
     public async publishMessage(message: string): Promise<void> {
         try {
             await this.channelWrapper.sendToQueue(this.queueName, Buffer.from(message));
@@ -27,6 +38,11 @@ export class RabbitMqService implements QueueService {
         }
     }
 
+    /**
+     * A function that initializes the module and sets up the channel to consume messages.
+     *
+     * @return {Promise<void>} A promise that resolves when the setup is complete.
+     */
     public async onModuleInit(): Promise<void> {
         try {
             await this.channelWrapper.addSetup(async (channel: ConfirmChannel) => {
