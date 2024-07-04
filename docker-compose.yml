@@ -1,0 +1,67 @@
+version: '1.0'
+
+services:
+  healthera-nginx:
+    image: jwilder/nginx-proxy
+    container_name: healthera-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./docker/nginx/nginx-conf:/etc/nginx/conf.d
+    depends_on:
+      - healthera-api
+      - rabbitmq
+      - sqsqueue
+
+  healthera-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /usr/src/app
+    container_name: healthera-api
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    depends_on:
+      - rabbitmq
+      - sqsqueue
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:rabbitmq@rabbitmq:5672
+    networks:
+      - app-network
+    volumes:
+      - .:/usr/src/app
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app-network
+
+  sqsqueue:
+    image: localstack/localstack
+    container_name: sqs
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs
+    networks:
+      - app-network
+
+volumes:
+  rabbitmq_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
