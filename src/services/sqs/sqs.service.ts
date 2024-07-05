@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { QueueService } from '../queue.service.interface';
 import { 
     SQSClient, 
@@ -111,10 +111,9 @@ export class SqsService implements QueueService {
         await this.createQueue();
         // Start consuming messages
         this.consumeMessages(async (message) => {
-            console.log('Received message:', message);
+            Logger.log('Received message:', message);
 
             this.tasksService.create(JSON.parse(message));
-            // Process the message here
         });
     }
 }

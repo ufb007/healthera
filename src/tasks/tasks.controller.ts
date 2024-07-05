@@ -14,6 +14,10 @@ export class TasksController {
     @Post()
     public async createTask(@Body() createTaskDto: CreateTaskDto): Promise<void> {
         await this.queueService.publishMessage(JSON.stringify(createTaskDto));
-        //await this.tasksService.create(createTaskDto);
+    }
+
+    @Get()
+    public async getTasks(): Promise<any> {
+        return await this.tasksService.findAll();
     }
 }

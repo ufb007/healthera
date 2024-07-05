@@ -3,7 +3,6 @@ import { QueueService } from '../queue.service.interface';
 import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 import { Channel, ConfirmChannel } from 'amqplib';
 import { TasksService } from 'src/tasks/tasks.service';
-import { TaskRepository } from 'src/repositories/task.repository';
 
 @Injectable()
 export class RabbitMqService implements QueueService {
