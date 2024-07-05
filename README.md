@@ -71,5 +71,13 @@ You can monitor SQS server via the AWS CLI:
 aws --endpoint-url=http://localhost:4566 sqs get-queue-attributes --queue-url http://localhost:4566/000000000000/taskQueue --attribute-names All
 ```
 
+#### Switch Queue provider
+
+Swith queue provider by the environment variable `QUEUE_PROVIDER` to either `rabbitmq` or `sqs` and restart docker containers:
+
+```
+docker-compose restart
+```
+
 #### Testing
 No tests have been done.
